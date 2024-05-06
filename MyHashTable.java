@@ -81,16 +81,25 @@ public class MyHashTable<K, V> implements IMyHashTable {
     public Object remove(Object key) {
         int index = hash(key);
         HashNode<K, V> curr = chainArray[index];
-        return remove(curr, key);
+        HashNode<K, V> prev = null;
+        return remove(curr, prev, key);
     }
-    public Object remove(HashNode<K, V> curr, Object key) {
+
+    public Object remove(HashNode<K, V> curr, HashNode<K, V> prev, Object key) {
         if (curr == null) {
             return null;
         }
         if (curr.key.equals(key)) {
-            curr.value = null;
+            if (prev == null) {
+                int index = hash(key);
+                chainArray[index] = curr.next;
+            } else {
+                prev.next = curr.next;
+            }
+            size--;
+            return curr.value;
         }
-        return remove(curr.next, key);
+        return remove(curr.next, curr, key);
     }
 
     @Override
