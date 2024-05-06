@@ -40,18 +40,19 @@ public class MyHashTable<K, V> implements IMyHashTable {
         HashNode<K, V> newNode = new HashNode<>((K) key, (V) value);
         if (chainArray[index] == null) {
             chainArray[index] = newNode;
-        }else {
+        } else {
             HashNode<K, V> curr = chainArray[index];
             put(curr, key, value);
         }
         size++;
     }
-    public void put(HashNode<K, V> curr, Object key, Object value){
-        if(curr.key.equals(key)){
-            curr.value = (V)value;
+
+    public void put(HashNode<K, V> curr, Object key, Object value) {
+        if (curr.key.equals(key)) {
+            curr.value = (V) value;
             return;
         }
-        if(curr.next == null){
+        if (curr.next == null) {
             curr.next = new HashNode<>((K) key, (V) value);
             return;
         }
@@ -61,12 +62,35 @@ public class MyHashTable<K, V> implements IMyHashTable {
 
     @Override
     public Object get(Object key) {
-        return null;
+        int index = hash(key);
+        HashNode<K, V> curr = chainArray[index];
+        return get(curr, key);
+    }
+
+    public Object get(HashNode<K, V> curr, Object key) {
+        if (curr == null) {
+            return null;
+        }
+        if (curr.key.equals(key)) {
+            return curr.value;
+        }
+        return get(curr.next, key);
     }
 
     @Override
     public Object remove(Object key) {
-        return null;
+        int index = hash(key);
+        HashNode<K, V> curr = chainArray[index];
+        return remove(curr, key);
+    }
+    public Object remove(HashNode<K, V> curr, Object key) {
+        if (curr == null) {
+            return null;
+        }
+        if (curr.key.equals(key)) {
+            curr.value = null;
+        }
+        return remove(curr.next, key);
     }
 
     @Override
