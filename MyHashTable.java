@@ -104,11 +104,52 @@ public class MyHashTable<K, V> implements IMyHashTable {
 
     @Override
     public boolean contains(Object value) {
+        for (int i = 0; i < M; i++)
+        {
+            HashNode<K, V> curr = chainArray[i];
+            if(contains(curr, value))
+            {
+                return true;
+            }
+        }
         return false;
+    }
+    public boolean contains(HashNode<K, V> curr, Object value)
+    {
+        if (curr == null)
+        {
+            return false;
+        }
+        if (curr.value.equals(value))
+        {
+            return true;
+        }
+        return contains(curr.next, value);
     }
 
     @Override
-    public Object getKey(Object value) {
+    public K getKey(Object value) {
+        for (int i = 0; i < M; i++)
+        {
+            HashNode<K, V> curr = chainArray[i];
+            K key = getKey(curr, value);
+            if (key != null)
+            {
+                return key;
+            }
+        }
         return null;
+    }
+    public K getKey(HashNode<K, V> curr, Object value)
+    {
+        if (curr == null)
+        {
+            return null;
+        }
+        if (curr.value.equals(value))
+        {
+            return curr.key;
+        }
+        return getKey(curr.next, value);
     }
 }
