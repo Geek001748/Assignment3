@@ -1,9 +1,9 @@
 public class MyHashTable<K, V> implements IMyHashTable<K, V> {
 
-    private static class HashNode<K, V> {
+    public class HashNode<K, V> {
         private K key;
         private V value;
-        private HashNode<K, V> next;
+        HashNode<K, V> next;
 
         public HashNode(K key, V value) {
             this.key = key;
@@ -20,15 +20,21 @@ public class MyHashTable<K, V> implements IMyHashTable<K, V> {
     private int M = 11;
     private int size;
 
-    @SuppressWarnings("unchecked")
     public MyHashTable() {
         chainArray = new HashNode[M];
     }
 
-    @SuppressWarnings("unchecked")
     public MyHashTable(int M) {
         this.M = M;
         chainArray = new HashNode[M];
+    }
+
+    public int chainArraySize() {
+        return chainArray.length;
+    }
+
+    public HashNode<K,V> getChainArray(int i) {
+        return chainArray[i];
     }
 
     @Override
