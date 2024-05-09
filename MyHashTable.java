@@ -1,6 +1,6 @@
-public class MyHashTable<K, V> implements IMyHashTable {
+public class MyHashTable<K, V> implements IMyHashTable<K, V> {
 
-    private class HashNode<K, V> {
+    private static class HashNode<K, V> {
         private K key;
         private V value;
         private HashNode<K, V> next;
@@ -20,10 +20,12 @@ public class MyHashTable<K, V> implements IMyHashTable {
     private int M = 11;
     private int size;
 
+    @SuppressWarnings("unchecked")
     public MyHashTable() {
         chainArray = new HashNode[M];
     }
 
+    @SuppressWarnings("unchecked")
     public MyHashTable(int M) {
         this.M = M;
         chainArray = new HashNode[M];
@@ -35,121 +37,111 @@ public class MyHashTable<K, V> implements IMyHashTable {
     }
 
     @Override
-    public void put(Object key, Object value) {
+    public void put(K key, V value) {
+        if (key == null)
+            throw new IllegalArgumentException("Key cannot be null.");
+
         int index = hash(key);
-        HashNode<K, V> newNode = new HashNode<>((K) key, (V) value);
+        HashNode<K, V> newNode = new HashNode<>(key, value);
         if (chainArray[index] == null) {
             chainArray[index] = newNode;
         } else {
-            HashNode<K, V> curr = chainArray[index];
-            put(curr, key, value);
+            HashNode<K, V> current = chainArray[index];
+            put(current, key, value);
         }
         size++;
     }
 
-    public void put(HashNode<K, V> curr, Object key, Object value) {
-        if (curr.key.equals(key)) {
-            curr.value = (V) value;
+    private void put(HashNode<K, V> current, K key, V value) {
+        if (current.key.equals(key)) {
+            current.value = value;
             return;
         }
-        if (curr.next == null) {
-            curr.next = new HashNode<>((K) key, (V) value);
-            return;
+        if (current.next == null) {
+            current.next = new HashNode<>(key, value);
+        } else {
+            put(current.next, key, value);
         }
-
-        put(curr.next, key, value);
     }
 
     @Override
-    public Object get(Object key) {
+    public V get(Object key) {
         int index = hash(key);
-        HashNode<K, V> curr = chainArray[index];
-        return get(curr, key);
+        HashNode<K, V> current = chainArray[index];
+        return get(current, key);
     }
 
-    public Object get(HashNode<K, V> curr, Object key) {
-        if (curr == null) {
+    private V get(HashNode<K, V> current, Object key) {
+        if (current == null) {
             return null;
         }
-        if (curr.key.equals(key)) {
-            return curr.value;
+        if (current.key.equals(key)) {
+            return current.value;
         }
-        return get(curr.next, key);
+        return get(current.next, key);
     }
 
     @Override
-    public Object remove(Object key) {
+    public V remove(Object key) {
         int index = hash(key);
-        HashNode<K, V> curr = chainArray[index];
-        HashNode<K, V> prev = null;
-        return remove(curr, prev, key);
+        HashNode<K, V> current = chainArray[index];
+        return remove(current, null, key);
     }
 
-    public Object remove(HashNode<K, V> curr, HashNode<K, V> prev, Object key) {
-        if (curr == null) {
+    private V remove(HashNode<K, V> current, HashNode<K, V> previous, Object key) {
+        if (current == null) {
             return null;
         }
-        if (curr.key.equals(key)) {
-            if (prev == null) {
-                int index = hash(key);
-                chainArray[index] = curr.next;
+        if (current.key.equals(key)) {
+            if (previous == null) {
+                chainArray[hash(key)] = current.next;
             } else {
-                prev.next = curr.next;
+                previous.next = current.next;
             }
             size--;
-            return curr.value;
+            return current.value;
         }
-        return remove(curr.next, curr, key);
+        return remove(current.next, current, key);
     }
 
     @Override
-    public boolean contains(Object value) {
-        for (int i = 0; i < M; i++)
-        {
-            HashNode<K, V> curr = chainArray[i];
-            if(contains(curr, value))
-            {
+    public boolean contains(V value) {
+        for (HashNode<K, V> node : chainArray) {
+            if (contains(node, value)) {
                 return true;
             }
         }
         return false;
     }
-    public boolean contains(HashNode<K, V> curr, Object value)
-    {
-        if (curr == null)
-        {
+
+    private boolean contains(HashNode<K, V> current, V value) {
+        if (current == null) {
             return false;
         }
-        if (curr.value.equals(value))
-        {
+        if (current.value.equals(value)) {
             return true;
         }
-        return contains(curr.next, value);
+        return contains(current.next, value);
     }
 
     @Override
-    public K getKey(Object value) {
-        for (int i = 0; i < M; i++)
-        {
-            HashNode<K, V> curr = chainArray[i];
-            K key = getKey(curr, value);
-            if (key != null)
-            {
+    public K getKey(V value) {
+        for (HashNode<K, V> node : chainArray) {
+            K key = getKey(node, value);
+            if (key != null) {
                 return key;
             }
         }
         return null;
     }
-    public K getKey(HashNode<K, V> curr, Object value)
-    {
-        if (curr == null)
-        {
+
+    private K getKey(HashNode<K, V> current, V value) {
+        if (current == null) {
             return null;
         }
-        if (curr.value.equals(value))
-        {
-            return curr.key;
+        if (current.value.equals(value)) {
+            return current.key;
         }
-        return getKey(curr.next, value);
+        return getKey(current.next, value);
     }
 }
