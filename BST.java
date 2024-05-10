@@ -1,22 +1,22 @@
 import java.util.Iterator;
 import java.util.Stack;
 
-public class BST<K extends Comparable<K>, V> implements IBST<K, V>{
+public class BST<K extends Comparable<K>, V> implements IBST<K, V> {
 
     private Node root;
     private int size;
-    public BST()
-    {
+
+    public BST() {
         this.root = null;
         this.size = 0;
     }
-    private class Node
-    {
+
+    private class Node {
         private K key;
         private V value;
         private Node left, right;
-        public Node(K key, V value)
-        {
+
+        public Node(K key, V value) {
             this.key = key;
             this.value = value;
             this.left = null;
@@ -27,58 +27,55 @@ public class BST<K extends Comparable<K>, V> implements IBST<K, V>{
     public static class Entry<K, V> {
         private K key;
         private V value;
-        public Entry(K key, V value)
-        {
+
+        public Entry(K key, V value) {
             this.key = key;
             this.value = value;
         }
-        public K getKey()
-        {
+
+        public K getKey() {
             return key;
         }
-        public V getValue()
-        {
-           return value;
+
+        public V getValue() {
+            return value;
         }
     }
 
     public int size() {
         return size;
     }
+
     @Override
-    public Iterator<Entry<K, V>> iterator()
-    {
+    public Iterator<Entry<K, V>> iterator() {
         return new InOrderIterator();
     }
 
-    private class InOrderIterator implements Iterator<Entry<K, V>>
-    {
+    private class InOrderIterator implements Iterator<Entry<K, V>> {
         private Node curr;
         private Stack<Node> stack;
-        private InOrderIterator()
-        {
+
+        private InOrderIterator() {
             curr = root;
             stack = new Stack<>();
         }
+
         @Override
-        public boolean hasNext()
-        {
+        public boolean hasNext() {
             return curr != null || !stack.isEmpty();
         }
 
         @Override
-        public Entry<K, V> next()
-        {
+        public Entry<K, V> next() {
             next(curr);
             curr = stack.pop();
             Node node = curr;
             curr = curr.right;
             return new Entry<>(node.key, node.value);
         }
-        public void next(Node curr)
-        {
-            if (curr == null)
-            {
+
+        public void next(Node curr) {
+            if (curr == null) {
                 return;
             }
             stack.push(curr);
@@ -90,25 +87,18 @@ public class BST<K extends Comparable<K>, V> implements IBST<K, V>{
     public void put(K key, V val) {
         root = put(root, key, val);
     }
+
     public Node put(Node root, K key, V val) {
-        if (root == null)
-        {
-            size ++;
+        if (root == null) {
+            size++;
             return new Node(key, val);
-        }
-        else {
-            Node node = new Node (key, val);
+        } else {
             int pos = key.compareTo(root.key);
-            if (pos > 0)
-            {
+            if (pos > 0) {
                 root.right = put(root.right, key, val);
-            }
-            else if (pos < 0)
-            {
+            } else if (pos < 0) {
                 root.left = put(root.left, key, val);
-            }
-            else
-            {
+            } else {
                 root.value = val;
             }
         }
@@ -118,8 +108,23 @@ public class BST<K extends Comparable<K>, V> implements IBST<K, V>{
 
     @Override
     public V get(K key) {
-        return null;
+        return get(root, key);
     }
+
+    public V get(Node root, K key) {
+        if (root == null) {
+            return null;
+        }
+        int pos = key.compareTo(root.key);
+        if (pos > 0) {
+            return get(root.right, key);
+        } else if (pos < 0) {
+            return get(root.left, key);
+        } else {
+            return root.value;
+        }
+    }
+
 
     @Override
     public void delete(K key) {
