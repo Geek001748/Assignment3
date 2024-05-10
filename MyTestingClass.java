@@ -5,8 +5,7 @@ public class MyTestingClass {
     {
         this.value = value;
     }
-    @Override
-    public int hashCode()
+    public int myHashCode()
     {
         return value % 11;
     }

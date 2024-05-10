@@ -17,7 +17,7 @@ public class MyHashTable<K, V> implements IMyHashTable<K, V> {
     }
 
     private HashNode<K, V>[] chainArray;
-    private int M = 11;
+    private int M;
     private int size;
 
     public MyHashTable() {
@@ -33,13 +33,34 @@ public class MyHashTable<K, V> implements IMyHashTable<K, V> {
         return chainArray.length;
     }
 
-    public HashNode<K,V> getChainArray(int i) {
+    public HashNode<K, V> getChainArray(int i) {
         return chainArray[i];
     }
 
     @Override
-    public int hash(Object key) {
-        return key.hashCode() % M;
+    public int hash(K keyDummy) {
+        if (keyDummy instanceof String) {
+            String key = (String) keyDummy;
+            int hash = 0;
+            for (int i = 0; i < key.length(); i++) {
+                hash = (31 * hash + key.charAt(i)) % M;
+            }
+            return hash;
+        } else if (keyDummy instanceof Integer) {
+            int key = (Integer) keyDummy;
+            return key % M;
+        } else if (keyDummy instanceof Double) {
+            long bits = Double.doubleToLongBits((Double) keyDummy);
+            return (int) (bits ^ (bits >>> 32)) % M;
+        } else if (keyDummy instanceof Character) {
+            char key = (Character) keyDummy;
+            return key % M;
+        } else if (keyDummy instanceof MyTestingClass) {
+            int customKey = ((MyTestingClass) keyDummy).myHashCode();
+            return customKey % M;
+        } else {
+            throw new IllegalArgumentException("Unsupported key type: " + keyDummy.getClass().getName());
+        }
     }
 
     @Override
@@ -71,7 +92,7 @@ public class MyHashTable<K, V> implements IMyHashTable<K, V> {
     }
 
     @Override
-    public V get(Object key) {
+    public V get(K key) {
         int index = hash(key);
         HashNode<K, V> current = chainArray[index];
         return get(current, key);
@@ -88,13 +109,13 @@ public class MyHashTable<K, V> implements IMyHashTable<K, V> {
     }
 
     @Override
-    public V remove(Object key) {
+    public V remove(K key) {
         int index = hash(key);
         HashNode<K, V> current = chainArray[index];
         return remove(current, null, key);
     }
 
-    private V remove(HashNode<K, V> current, HashNode<K, V> previous, Object key) {
+    private V remove(HashNode<K, V> current, HashNode<K, V> previous, K key) {
         if (current == null) {
             return null;
         }
