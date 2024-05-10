@@ -88,8 +88,33 @@ public class BST<K extends Comparable<K>, V> implements IBST<K, V>{
 
     @Override
     public void put(K key, V val) {
-
+        root = put(root, key, val);
     }
+    public Node put(Node root, K key, V val) {
+        if (root == null)
+        {
+            size ++;
+            return new Node(key, val);
+        }
+        else {
+            Node node = new Node (key, val);
+            int pos = key.compareTo(root.key);
+            if (pos > 0)
+            {
+                root.right = put(root.right, key, val);
+            }
+            else if (pos < 0)
+            {
+                root.left = put(root.left, key, val);
+            }
+            else
+            {
+                root.value = val;
+            }
+        }
+        return root;
+    }
+
 
     @Override
     public V get(K key) {
