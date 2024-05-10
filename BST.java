@@ -128,6 +128,33 @@ public class BST<K extends Comparable<K>, V> implements IBST<K, V> {
 
     @Override
     public void delete(K key) {
-
+        root = delete(root, key);
+    }
+    public Node delete(Node root, K key) {
+        if (root == null) {
+            return null;
+        }
+        int pos = key.compareTo(root.key);
+        if (pos > 0) {
+            root.right = delete(root.right, key);
+        } else if (pos < 0) {
+            root.left = delete(root.left, key);
+        } else {
+            // Has 1 child
+            if (root.right == null) {
+                return root.left;
+            }
+            if (root.left == null) {
+                return root.right;
+            }
+            // Has both
+                root.key =  findSmallestKey(root.left);
+                root.left = delete(root.left, root.key);
+        }
+        return root;
+    }
+    private K findSmallestKey(Node root) {
+        return root.left == null ? root.key : findSmallestKey(root.right);
     }
 }
+
