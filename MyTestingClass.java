@@ -1,4 +1,5 @@
-public class MyTestingClass {
+public class MyTestingClass
+{
     private int value;
 
     public MyTestingClass(int value)
